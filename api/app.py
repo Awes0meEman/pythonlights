@@ -16,9 +16,14 @@ root.addHandler(file_handler)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '2decf1d53dd9c26c755be2c6702bbfe568f15bab34097cde'
-#lightList = lights.getAllLightsTest("192.168.254.255")
+#lightList = lights.getAllLightsTest()
 #commented out for testing when not on a network with lights.
 lightList = asyncio.run(lights.getAllLights("192.168.254.255"))
+
+@app.errorhandler(Exception)
+def exception_handler(e):
+    app.logger.exception("An error occurred")
+    return render_template("error.html")
 
 @app.before_request
 def load_navs():
@@ -29,7 +34,12 @@ def load_navs():
 def index():
     return render_template("index.html")
 
-@app.route('/lightpanel', methods=('GET', 'POST'))
+@app.route('/error')
+def error():
+    problem = 1 / 0 
+    return "stuff"
+
+@app.route('/lightpanel', methods=['GET', 'POST'])
 def lightpanel():
     global navlinks
     if request.method == 'POST':
@@ -44,7 +54,7 @@ def lightpanel():
             asyncio.run(lights.setLightColor(light.ip, red, green, blue))
     return render_template("lightpanel.html", lightList=lightList)
 
-@app.route('/setAllLights', methods=('GET', 'POST'))
+@app.route('/setAllLights', methods=['GET', 'POST'])
 def setAllLights():
     if request.method == 'POST':
         input = request.form['setColor']
@@ -57,7 +67,7 @@ def setAllLights():
             asyncio.run(lights.setLightColor(light.ip, red, green, blue))
     return render_template("setAllLights.html")
         
-@app.route('/api/lights/setAll', methods=('GET','POST'))
+@app.route('/api/lights/setAll', methods=['GET','POST'])
 def apilights():
     if request.method == 'POST':
         data = json.loads(request.data)
@@ -75,7 +85,7 @@ def apilights():
         else:
             return jsonify({'error': 'Invalid JSON request'})
 
-@app.route('/api//lights//toggle', methods=('GET','POST'))
+@app.route('/api/lights/toggle/', methods=['GET','POST'])
 def apilighttoggle():
     if request.method == 'POST':
         data = json.loads(request.data)
@@ -91,7 +101,7 @@ def apilighttoggle():
         else:
             return jsonify({'error': 'Invalid JSON request'})
 
-@app.route('/refreshLights', methods=('GET','POST'))
+@app.route('/refreshLights', methods=['GET','POST'])
 def refreshLights():
     if request.method == 'POST':
         global lightList 

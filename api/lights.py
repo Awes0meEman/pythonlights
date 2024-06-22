@@ -1,5 +1,3 @@
-import asyncio
-
 from pywizlight import wizlight, PilotBuilder, discovery
 
 async def getAllLights(network):
@@ -12,7 +10,7 @@ async def getAllLights(network):
         bulbList.append(listMember)
     return bulbList
 
-def getAllLightsTest(network):
+def getAllLightsTest():
     bulbList = []
     for x in range(6):
         listMember = BulbListMember(f"192.168.254.{x}",x)
@@ -37,8 +35,6 @@ async def main():
     for bulb in bulbs:
         print(bulb.__dict__)
 
-#loop = asyncio.get_event_loop()
-#loop.run_until_complete(main())
 class BulbListMember:
     def __init__(self, ip, listNumber):
         self.ip = ip
