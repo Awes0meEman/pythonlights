@@ -34,7 +34,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
             {% for navlink in g.navlinks %}
-            {% if navlink != 'index' and navlink != 'api/lights' %}
+            {% if navlink != 'index' and navlink.startswith('api') != true %}
             <li class="nav-item active">
                 <a class="nav-link" href="{{ url_for(navlink) }}">{{navlink}}</a>
             </li>
