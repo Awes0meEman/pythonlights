@@ -3,6 +3,17 @@ import lights
 import asyncio
 import utilityfunctions
 import json
+import logging
+
+#set up handler for logging
+file_handler = logging.FileHandler(filename='logger/logfile.log')
+file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s'))
+file_handler.setLevel(logging.DEBUG)
+
+#set root logger handler to be the configured file handler
+root = logging.getLogger()
+root.addHandler(file_handler)
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '2decf1d53dd9c26c755be2c6702bbfe568f15bab34097cde'
 #lightList = lights.getAllLightsTest("192.168.254.255")
@@ -64,7 +75,7 @@ def apilights():
         else:
             return jsonify({'error': 'Invalid JSON request'})
 
-@app.route('/api/lights/toggle', methods=('GET','POST'))
+@app.route('/api//lights//toggle', methods=('GET','POST'))
 def apilighttoggle():
     if request.method == 'POST':
         data = json.loads(request.data)
@@ -88,4 +99,6 @@ def refreshLights():
     return render_template("refreshLights.html")
 
 if __name__ == "__main__":
+    app.logger.info('Started')
     app.run()
+
