@@ -34,11 +34,6 @@ def load_navs():
 def index():
     return render_template("index.html")
 
-@app.route('/error')
-def error():
-    problem = 1 / 0 
-    return "stuff"
-
 @app.route('/lightpanel', methods=['GET', 'POST'])
 def lightpanel():
     global navlinks
