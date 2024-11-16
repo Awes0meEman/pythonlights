@@ -1,3 +1,4 @@
+from werkzeug.exceptions import HTTPException
 from flask import Flask, render_template, request, jsonify, g
 import lights
 import asyncio
@@ -22,8 +23,26 @@ lightList = asyncio.run(lights.getAllLights("192.168.254.255"))
 
 @app.errorhandler(Exception)
 def exception_handler(e):
+    #response = e.get_response()
+    #response.data = json.dumps({
+    #    "code": e.code,
+    #    "name": e.name,
+    #    "description": e.description,
+    #})
+    #response.content_type = "application/json"
     app.logger.exception("An error occurred")
     return render_template("error.html")
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(e):
+    response = e.get_response()
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
 
 @app.before_request
 def load_navs():
@@ -61,9 +80,9 @@ def setAllLights():
         for light in lightList:
             asyncio.run(lights.setLightColor(light.ip, red, green, blue))
     return render_template("setAllLights.html")
-        
-@app.route('/api/lights/setAll', methods=['GET','POST'])
-def apilights():
+
+@app.route('/api/v1/setAll', methods=['GET','POST'])
+def api_lights_set_all():
     if request.method == 'POST':
         data = json.loads(request.data)
         print(data['color'])
@@ -79,9 +98,13 @@ def apilights():
             return jsonify({'success': 'Successful request'})
         else:
             return jsonify({'error': 'Invalid JSON request'})
+    elif request.method == 'GET':
+        return jsonify({'':''})
+    else:
+        return ""
 
-@app.route('/api/lights/toggle/', methods=['GET','POST'])
-def apilighttoggle():
+@app.route('/api/v1/toggle/', methods=['GET','POST'])
+def api_lights_toggle():
     if request.method == 'POST':
         data = json.loads(request.data)
         print(data['toggle'])
@@ -92,14 +115,93 @@ def apilighttoggle():
         elif data['toggle'].lower() == 'off':
             for light in lightList:
                 asyncio.run(lights.setLightPowerOff(light.ip))
-            return jsonify({'success': 'Successful request'})
+            return jsonify({'message': 'Successful request'})
         else:
-            return jsonify({'error': 'Invalid JSON request'})
+            return jsonify({'message': 'Invalid JSON request'})
+    elif request.method == 'GET':
+        return jsonify({'message' : 'There are definitely some lights'})
+    else:
+        return ""
+
+@app.route('/api/v1/sunset', methods=['GET','POST'])
+def api_lights_sunset():
+    hexColor = "DE3E3E"
+    if request.method == 'POST':
+        rgb = utilityfunctions.hexToRGB(hexColor.strip())
+        red = rgb[0]
+        green = rgb[1]
+        blue = rgb[2]
+        for light in lightList:
+            asyncio.run(lights.setLightColor(light.ip, red, green, blue))
+        return jsonify({'success': 'Successful request'})
+    elif request.method == 'GET':
+        return jsonify({'value': hexColor})
+    return ""
+
+@app.route('/api/v1/moon', methods=['GET','POST'])
+def api_lights_moon():
+    hexColor = "95B2C4"
+    if request.method == 'POST':
+        rgb = utilityfunctions.hexToRGB(hexColor.strip())
+        red = rgb[0]
+        green = rgb[1]
+        blue = rgb[2]
+        for light in lightList:
+            asyncio.run(lights.setLightColor(light.ip, red, green, blue))
+        return jsonify({'success': 'Successful request'})
+    elif request.method == 'GET':
+        return jsonify({'value': hexColor})
+    return ""
+
+@app.route('/api/v1/sunrise', methods=['GET','POST'])
+def api_lights_sunrise():
+    hexColor = "E3E9D1"
+    if request.method == 'POST':
+        rgb = utilityfunctions.hexToRGB(hexColor.strip())
+        red = rgb[0]
+        green = rgb[1]
+        blue = rgb[2]
+        for light in lightList:
+            asyncio.run(lights.setLightColor(light.ip, red, green, blue))
+        return jsonify({'success': 'Successful request'})
+    elif request.method == 'GET':
+        return jsonify({'value': hexColor})
+    return ""
+
+@app.route('/api/v1/noon', methods=['GET','POST'])
+def api_lights_noon():
+    hexColor = "FCFCFC"
+    if request.method == 'POST':
+        rgb = utilityfunctions.hexToRGB(hexColor.strip())
+        red = rgb[0]
+        green = rgb[1]
+        blue = rgb[2]
+        for light in lightList:
+            asyncio.run(lights.setLightColor(light.ip, red, green, blue))
+        return jsonify({'success': 'Successful request'})
+    elif request.method == 'GET':
+        return jsonify({'value': hexColor})
+    return ""
+
+@app.route('/api/v1/evening', methods=['GET','POST'])
+def api_lights_evening():
+    hexColor = "D2C2BF"
+    if request.method == 'POST':
+        rgb = utilityfunctions.hexToRGB(hexColor.strip())
+        red = rgb[0]
+        green = rgb[1]
+        blue = rgb[2]
+        for light in lightList:
+            asyncio.run(lights.setLightColor(light.ip, red, green, blue))
+        return jsonify({'success': 'Successful request'})
+    elif request.method == 'GET':
+        return jsonify({'value': hexColor})
+    return ""
 
 @app.route('/refreshLights', methods=['GET','POST'])
 def refreshLights():
     if request.method == 'POST':
-        global lightList 
+        global lightList
         lightList = asyncio.run(lights.getAllLights("192.168.254.255"))
     return render_template("refreshLights.html")
 

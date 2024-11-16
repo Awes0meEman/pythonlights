@@ -17,9 +17,15 @@ def getAllLightsTest():
         bulbList.append(listMember)
     return bulbList
 
+async def setWhiteLight(ip):
+    light = wizlight(ip)
+    await light.turn_on(PilotBuilder(cold_white= 1))
 
 async def setLightColor(ip, red, green, blue):
     light = wizlight(ip)
+    if red == 255 and green == 255 and blue == 255:
+        await light.turn_on(PilotBuilder(cold_white = 255))
+        return
     await light.turn_on(PilotBuilder(rgb = (red, green, blue)))
 
 async def setLightPowerOff(ip):
