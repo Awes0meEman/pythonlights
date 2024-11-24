@@ -5,6 +5,7 @@ import asyncio
 import utilityfunctions
 import json
 import logging
+from yaml import safe_load
 
 #set up handler for logging
 file_handler = logging.FileHandler(filename='logger/logfile.log')
@@ -16,6 +17,10 @@ root = logging.getLogger()
 root.addHandler(file_handler)
 
 app = Flask(__name__)
+
+stream = open("config.yaml", "r")
+conf = safe_load(stream)
+stream.close()
 app.config['SECRET_KEY'] = '2decf1d53dd9c26c755be2c6702bbfe568f15bab34097cde'
 #lightList = lights.getAllLightsTest()
 #commented out for testing when not on a network with lights.
@@ -126,6 +131,7 @@ def api_lights_toggle():
 @app.route('/api/v1/sunset', methods=['GET','POST'])
 def api_lights_sunset():
     hexColor = "DE3E3E"
+    hexColor = conf['sunset']
     if request.method == 'POST':
         rgb = utilityfunctions.hexToRGB(hexColor.strip())
         red = rgb[0]
@@ -141,6 +147,7 @@ def api_lights_sunset():
 @app.route('/api/v1/moon', methods=['GET','POST'])
 def api_lights_moon():
     hexColor = "95B2C4"
+    hexColor = conf['moon']
     if request.method == 'POST':
         rgb = utilityfunctions.hexToRGB(hexColor.strip())
         red = rgb[0]
@@ -156,6 +163,7 @@ def api_lights_moon():
 @app.route('/api/v1/sunrise', methods=['GET','POST'])
 def api_lights_sunrise():
     hexColor = "E3E9D1"
+    hexColor = conf['sunrise']
     if request.method == 'POST':
         rgb = utilityfunctions.hexToRGB(hexColor.strip())
         red = rgb[0]
@@ -171,6 +179,7 @@ def api_lights_sunrise():
 @app.route('/api/v1/noon', methods=['GET','POST'])
 def api_lights_noon():
     hexColor = "FCFCFC"
+    hexColor = conf['noon']
     if request.method == 'POST':
         rgb = utilityfunctions.hexToRGB(hexColor.strip())
         red = rgb[0]
@@ -186,6 +195,7 @@ def api_lights_noon():
 @app.route('/api/v1/evening', methods=['GET','POST'])
 def api_lights_evening():
     hexColor = "D2C2BF"
+    hexColor = conf['evening']
     if request.method == 'POST':
         rgb = utilityfunctions.hexToRGB(hexColor.strip())
         red = rgb[0]
