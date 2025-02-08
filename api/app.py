@@ -3,9 +3,12 @@ from flask import Flask, render_template, request, jsonify, g
 import lights
 import asyncio
 import utilityfunctions
+import wyzeutils
 import json
 import logging
+import os
 from yaml import safe_load
+from wyze_sdk import Client
 
 #set up handler for logging
 file_handler = logging.FileHandler(filename='logger/logfile.log')
@@ -22,9 +25,16 @@ stream = open("config.yaml", "r")
 conf = safe_load(stream)
 stream.close()
 app.config['SECRET_KEY'] = '2decf1d53dd9c26c755be2c6702bbfe568f15bab34097cde'
+
+response = wyzeutils.login()
+client = Client(token=response['access_token'])
+
 #lightList = lights.getAllLightsTest()
 #commented out for testing when not on a network with lights.
 lightList = asyncio.run(lights.getAllLights("192.168.254.255"))
+def setup():
+    response = Client().login(email=os.environ['WYZE_EMAIL'], password=os.environ['WYZE_PASSWORD'])
+    client = Client(token=response['access_token'])
 
 @app.errorhandler(Exception)
 def exception_handler(e):
