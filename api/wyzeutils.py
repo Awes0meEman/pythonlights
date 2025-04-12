@@ -17,10 +17,16 @@ def printDevices(access_token):
 
 def main():
     response = login()
-    if response != 0:
+    if response != None:
         printDevices(response['access_token'])
     else:
         raise Exception("Error logging into Wyze API")
+
+def verifyToken(token):
+    if token == None:
+        return False
+    else:
+        return True
 
 def login():
     email = os.getenv('WYZE_EMAIL')
@@ -28,13 +34,13 @@ def login():
     key_id = os.getenv('WYZE_KEY_ID')
     api_key = os.getenv('WYZE_API_KEY')
     if email == None:
-        return 0
+        return None
     elif password == None:
-        return 0
+        return None
     elif key_id == None:
-        return 0
+        return None
     elif api_key == None:
-        return 0
+        return None
     return Client().login(email=email, password=password, api_key=api_key, key_id=key_id)
 
-main()
+#main()

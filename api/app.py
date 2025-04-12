@@ -1,12 +1,12 @@
 from werkzeug.exceptions import HTTPException
 from flask import Flask, render_template, request, jsonify, g
+from wyze_sdk.api.client import WyzeResponse
 import lights
 import asyncio
 import utilityfunctions
 import wyzeutils
 import json
 import logging
-import os
 from yaml import safe_load
 from wyze_sdk import Client
 
@@ -25,16 +25,17 @@ stream = open("config.yaml", "r")
 conf = safe_load(stream)
 stream.close()
 app.config['SECRET_KEY'] = '2decf1d53dd9c26c755be2c6702bbfe568f15bab34097cde'
+wyze_access_token = None
+response: WyzeResponse | None = wyzeutils.login()
 
-response = wyzeutils.login()
-client = Client(token=response['access_token'])
+if response != None:
+    wyze_access_token = response['access_token']
+
+app.logger.debug(wyze_access_token)
 
 #lightList = lights.getAllLightsTest()
 #commented out for testing when not on a network with lights.
 lightList = asyncio.run(lights.getAllLights("192.168.254.255"))
-def setup():
-    response = Client().login(email=os.environ['WYZE_EMAIL'], password=os.environ['WYZE_PASSWORD'])
-    client = Client(token=response['access_token'])
 
 @app.errorhandler(Exception)
 def exception_handler(e):
@@ -226,6 +227,6 @@ def refreshLights():
     return render_template("refreshLights.html")
 
 if __name__ == "__main__":
-    app.logger.info('Started')
+    app.logger.debug('Started')
     app.run()
 
