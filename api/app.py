@@ -228,5 +228,5 @@ def refreshLights():
 
 if __name__ == "__main__":
     app.logger.debug('Started')
-    app.run()
+    app.run(debug=False,host='0.0.0.0')
 
